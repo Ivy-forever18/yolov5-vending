@@ -1,0 +1,131 @@
+# 数据集根目录（绝对路径）
+path: C:/Users/ygao346/OneDrive - City University of Hong Kong - Student/Desktop/yolov5-vending/yolov5-master/dataset
+# 训练和验证图像路径（相对于 path）
+train: images/train
+val: images/val
+
+# 类别数量
+nc: 113
+
+# 类别名称
+yamlpath: ../dataset  # dataset root dir
+train: images/train  # train images (relative to 'path')
+val: images/val      # val images (relative to 'path')
+test: images/test    # test images (optional)
+
+
+nc: 113
+names:
+  0: Master Kong 3+2 Soda Sandwich Crackers (Vanilla Chocolate)
+  1: 3+2 Sandwich Crackers (Oreo-style)
+  2: Oreo-style Sandwich Cookies
+  3: Ambrosial Yogurt
+  4: Aoliao Milk
+  5: Light Mousse Cake
+  6: White Tea
+  7: White Cola
+  8: White Cola (New Version)
+  9: Explosive Pear Juice
+  10: Iced Black Tea
+  11: Ice Cream Milk
+  12: Rock Sugar Pear Drink
+  13: Pudding
+  14: Tea Crisp
+  15: Cha Pai (Tea Pie)
+  16: Cha Pai 2
+  17: Barley Tea
+  18: Upside-Down Heaven 1
+  19: Upside-Down Heaven 2
+  20: Upside-Down Heaven 3
+  21: Upside-Down Heaven 4
+  22: Dongpeng Special Drink
+  23: Dongpeng Special Drink (Bottle)
+  24: Fanta
+  25: Gudasao (Cocktail-Style Drink)
+  26: Guo Li Cheng (Spicy Hot Noodles)
+  27: Guo Li Cheng 2
+  28: Haitai
+  29: Good Eat Point Potato Chips
+  30: Orion (Good Friend)
+  31: Cup Noodles (Nissin)
+  32: Cup Noodles 2
+  33: Cup Noodles 3
+  34: Red Bull
+  35: Red Bull (New Version)
+  36: Braised Beef
+  37: Pan-Fried Dumplings
+  38: Jianlibao
+  39: Pure Milk (Jindian)
+  40: Coffee
+  41: Grilled Ink Curry Flavor
+  42: Grilled Ink Pepper Salt
+  43: Grilled Ink BBQ Flavor
+  44: Grilled Ink Scallion Flavor
+  45: Kebike Potato Chips
+  46: Cola
+  47: Cola (Bottle)
+  48: Cola (Bottle 2)
+  49: Old Altar Sour Cabbage
+  50: Liao Noodles
+  51: Libaojian
+  52: Diet Coke / Coke Zero
+  53: Diet Coke (Bottle)
+  54: Pear Source
+  55: Deer Horn Fragrance
+  56: Lujia Coffee
+  57: Luxiang Beef
+  58: Maidong (Herbal Drink)
+  59: Mango Xiaolao
+  60: Meiniye
+  61: Mengniu Milk
+  62: Mengniu Breakfast Milk
+  63: Jasmine Green Tea
+  64: NFC Juice (Not From Concentrate)
+  65: Beef Bean Powder
+  66: Milk
+  67: Nongfu Spring Water
+  68: Tsingtao Prince 1
+  69: Tsingtao Prince 2
+  70: Qinning Lemon Water
+  71: Dust-Removing Lemongrass
+  72: Energy Tea 1
+  73: Energy Tea 2
+  74: Pork Floss Cake
+  75: Probiotic Sparkling Water
+  76: Sour and Spicy Glass Noodles
+  77: Sour and Spicy Beef
+  78: Uncle Taiping
+  79: Sugar Master
+  80: Sugar Master 2
+  81: Sugar Master 3
+  82: UFO Instant Luosifen
+  83: UFO Instant Luosifen 2
+  84: Wanglaoji Herbal Tea
+  85: Wanglaoji (Can)
+  86: Prince Milk
+  87: Vitamin C Drink
+  88: Weitanai
+  89: Weitanai 2
+  90: Weitanai Low Sugar
+  91: Weitanai Lemon
+  92: Weitanai Lemon (Bottle)
+  93: Weiwei Soy Milk
+  94: Wuhou Milk Tea
+  95: Oolong Tea
+  96: Spicy Beef
+  97: Mushroom Elder
+  98: Immortal Hero Fish Board
+  99: Sprite
+  100: Sprite (Bottle)
+  101: Sprite 2
+  102: Night Will
+  103: Yibao
+  104: Yida
+  105: Nutrition Express
+  106: Yitengyuan
+  107: Youlemei Milk Tea
+  108: Super Sour Milk
+  109: Youyang Gudong
+  110: Vitality Water
+  111: Breakfast Cube
+  112: Purple Sea Fruit
