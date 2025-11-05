@@ -1,104 +1,95 @@
-> 本仓库基于 YOLOv5，针对自动售货机场景进行了数据集组织、训练与推理流程的封装，便于快速部署和二次开发。
->
-> This repository is based on YOLOv5 and provides dataset organization, training and inference workflows tailored for vending machine use-cases, enabling quick deployment and further development.
+# YOLOv5 Vending — Vending Machine Detection & Recognition
+
+> This repository adapts YOLOv5 for vending machine scenarios. It includes dataset organization examples, training and inference scripts, export utilities, and deployment tips to help you quickly train and deploy a vending-machine object detection model.
+
+## Contents
+- Project Overview
+- Features
+- Requirements
+- Installation
+- Quick Start
+  - Inference (image / video / webcam)
+  - Training
+- Dataset & Annotation
+- Export & Deployment
+- Evaluation
+- Tips & Best Practices
+- Contributing
+- License
+- Contact
 
 ---
 
-目录 / Contents
-- 项目简介 / Project Overview
-- 功能亮点 / Features
-- 环境与依赖 / Requirements
-- 快速开始 / Quick Start
-- 训练 / Training
-- 推理 / Inference
-- 数据集与标注格式 / Dataset & Annotation
-- 导出与部署 / Export & Deployment
-- 评估 / Evaluation
-- 贡献 / Contributing
-- 许可 / License
-- 联系方式 / Contact
+## Project Overview
+This project provides scripts and documentation to train and deploy YOLOv5-based detectors tailored for vending machine environments: detecting items (drinks, snacks), slot/stock status (empty/full), coin slots, and other vending-specific classes. It is optimized for both offline batch processing and real-time camera applications.
 
----
+## Features
+- YOLOv5-based training and inference (supports yolov5s/m/l)
+- Example configs for YOLO (TXT) and COCO (JSON) dataset formats
+- Configurable training hyperparameters and augmentations
+- Export to ONNX / TensorRT (when supported)
+- Single-image, batch, video, and webcam inference
+- Tips for edge-device deployment (Jetson, Coral, etc.)
 
-项目简介 / Project Overview
-- 本项目目标是构建一个鲁棒的自动售货机物品检测模型（例如识别饮料、零食、货道状态等）。适用于视频/摄像头实时检测和离线图片批量处理。
-- This project aims to build a robust object detection model for vending machines (e.g. detecting drinks, snacks, slot/stock status). It is suitable for real-time camera/video detection and batch image processing.
-
-功能亮点 / Features
-- 基于 YOLOv5 的训练与推理流程（支持 yolov5s/yolov5m/yolov5l 等）
-- 支持 COCO/YOLO 格式数据集，含示例配置文件
-- 训练超参数/数据增强可配置
-- 支持导出 ONNX / TensorRT 等模型用于部署
-- 支持单张图像与视频流推理
-- Built on YOLOv5; supports yolov5s/m/l models
-- Works with COCO/YOLO dataset formats and includes example config
-- Configurable training params and augmentations
-- Export to ONNX / TensorRT for deployment
-- Single-image and video/stream inference supported
-
-环境与依赖 / Requirements
+## Requirements
 - Python 3.8+
-- PyTorch 1.10+
-- CUDA 10.2 / 11.x (如需 GPU)
-- 推荐使用虚拟环境（venv / conda）
-- Python 3.8+
-- PyTorch 1.10+
-- CUDA 10.2 / 11.x (for GPU)
-- Use virtual environment (venv / conda) recommended
+- PyTorch 1.10+ (or appropriate version for your CUDA)
+- CUDA 10.2 / 11.x for GPU acceleration (optional)
+- Other Python packages listed in requirements.txt
+- Optional: TensorRT, ONNX, OpenCV with contrib modules for some pipelines
 
-示例安装 / Example installation
+## Installation
 ```bash
-# 克隆仓库
 git clone https://github.com/Ivy-forever18/yolov5-vending.git
 cd yolov5-vending
 
-# 创建并激活虚拟环境（可选）
+# (Optional) Create virtual environment
 python -m venv venv
 source venv/bin/activate  # macOS / Linux
-# venv\Scripts\activate    # Windows
+# venv\Scripts\activate   # Windows
 
-# 安装依赖
 pip install -r requirements.txt
-# 若无 requirements.txt，可参考：
-# pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
+
+# If requirements.txt is missing, install core deps manually:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
 # pip install -r requirements.txt
 ```
 
-快速开始 / Quick Start
+## Quick Start
 
-推理示例（单张图片） / Inference (single image)
+### Inference (single image)
 ```bash
-# 使用预训练权重进行推理
-python detect.py --weights yolov5s.pt --source data/images/test.jpg --conf 0.25 --save-conf
+python detect.py --weights yolov5s.pt --source data/images/test.jpg --conf 0.25 --save-conf --project runs/detect --name vending_demo
 ```
 
-推理示例（视频 / 摄像头） / Inference (video / webcam)
+### Inference (video / webcam)
 ```bash
-# 使用摄像头
+# Webcam
 python detect.py --weights yolov5s.pt --source 0 --img 640 --conf 0.25
 
-# 处理视频文件
+# Video file
 python detect.py --weights yolov5s.pt --source data/videos/test.mp4 --img 640 --conf 0.25
 ```
 
-训练 / Training
-- 准备好数据集并创建 data/vending.yaml（或类似文件）指定训练/验证路径与类别。
-- 训练命令示例：
+### Training
+Prepare a data config (see Dataset & Annotation) and run:
 ```bash
 python train.py --img 640 --batch 16 --epochs 50 --data data/vending.yaml --weights yolov5s.pt --name vending_exp
 ```
-- 常见参数：
-  - --img: 输入大小
-  - --batch: 批大小（受显存限制）
-  - --epochs: 训练轮数
-  - --data: 数据配置文件（包含类名与路径）
-  - --weights: 初始权重（可用 yolov5s.pt 或上次训练的 best.pt）
+Common options:
+- --img: input image size (e.g., 640)
+- --batch: batch size (depends on GPU memory)
+- --epochs: number of training epochs
+- --data: path to data config YAML
+- --weights: initial weights (use pretrained yolov5s.pt or a checkpoint)
 
-数据集与标注格式 / Dataset & Annotation
-- 支持两种主流格式：
-  1. YOLO TXT（每张图片对应 .txt，格式：class x_center y_center width height，归一化到 [0,1]）
-  2. COCO JSON（标准 COCO 格式）
-- 推荐目录结构（YOLO 格式）：
+## Dataset & Annotation
+
+Supported formats:
+1. YOLO TXT (one .txt per image: "class x_center y_center width height" normalized to [0,1])
+2. COCO JSON (standard COCO format)
+
+Recommended directory structure for YOLO format:
 ```
 dataset/
   images/
@@ -110,7 +101,8 @@ dataset/
     val/
     test/
 ```
-- data/vending.yaml 示例：
+
+Example data/vending.yaml:
 ```yaml
 train: ../dataset/images/train
 val:   ../dataset/images/val
@@ -119,54 +111,211 @@ nc: 5
 names: ['drink','snack','coin_slot','empty_slot','other']
 ```
 
-导出与部署 / Export & Deployment
-- 导出 ONNX：
+Label tips:
+- Use consistent class names.
+- Ensure labels match images one-to-one.
+- Keep a validation set for reliable mAP measurement.
+
+## Export & Deployment
+
+Export to ONNX:
 ```bash
 python export.py --weights runs/train/vending_exp/weights/best.pt --img 640 --include onnx
 ```
-- 导出 TensorRT（如果仓库支持或你安装了相关依赖）：
+
+Export to TensorRT (if supported and dependencies installed):
 ```bash
 python export.py --weights runs/train/vending_exp/weights/best.pt --img 640 --include engine
 ```
-- 部署建议：在边缘设备优先使用轻量模型（yolov5s 或经过剪枝/量化的模型），在服务器端可使用更大模型以提高精度。
 
-评估 / Evaluation
-- 使用 val.py 或 detect/metrics 脚本评估检测性能（mAP, precision, recall）
-- 示例：
+Deployment notes:
+- For edge devices prioritize lightweight models (yolov5s) or quantized/pruned models.
+- Test exported models on target hardware and validate accuracy and latency.
+- Consider batching and input resizing appropriately for real-time pipelines.
+
+## Evaluation
+Use built-in validation scripts to compute mAP, precision, and recall:
 ```bash
 python val.py --weights runs/train/vending_exp/weights/best.pt --data data/vending.yaml --img 640
 ```
 
-调优建议 / Tips
-- 数据增强：适量使用 Mosaic、HSV、随机翻转等可提升鲁棒性
-- 类别不均衡：可考虑对小样本类别做上采样或使用 Focal Loss
-- 学习率与批大小：遵循线性缩放规则调整学习率
-- 如果需要更小更快的模型，考虑使用 pruning / quantization / knowledge distillation
+## Tips & Best Practices
+- Use Mosaic, MixUp, and appropriate augmentations to improve generalization.
+- Handle class imbalance by oversampling under-represented classes or using loss techniques (e.g., focal loss).
+- Tune learning rate with linear scaling rules when changing batch size.
+- For production, consider model quantization, pruning, or knowledge distillation to reduce size and latency.
 
-贡献 / Contributing
-- 欢迎提交 Issue 或 Pull Request
-- 提交前请先创建 Issue 讨论需求或 Bug
-- Fork → 新分支(feature/xxx) → 提交 PR
+## Contributing
+- Open an issue to discuss major changes or report bugs.
+- Fork the repo → create a feature branch → open a pull request with clear description and reproduction steps.
+- Include dataset subset or clear instructions when reporting dataset/label problems.
 
-许可 / License
-- 本仓库默认未声明特定许可证（请根据需要添加 LICENSE 文件）
-- If you plan to publish this project, add a license file (e.g., MIT) to clarify reuse terms.
+## License
+Add a LICENSE file to declare the repository license (e.g., MIT). This repository currently does not include an explicit license — please add one if you plan to share or redistribute.
 
-致谢 / Acknowledgements
-- 感谢 YOLOv5 原作者及社区贡献者，许多代码与结构参考自 ultralytics/yolov5。
-- Thanks to YOLOv5 authors and community; many scripts and structures are inspired by ultralytics/yolov5.
-
-联系方式 / Contact
-- 仓库：https://github.com/Ivy-forever18/yolov5-vending
-- 如需帮助，请在 Issue 中描述问题并附上复现步骤与日志。
-- Repo: https://github.com/Ivy-forever18/yolov5-vending
-- For help, open an Issue with reproduction steps and logs.
+## Contact
+Repository: https://github.com/Ivy-forever18/yolov5-vending  
+For help, open an issue with reproduction steps and logs.
 
 ---
 
-快速检查清单 / Quick checklist
-- [ ] data/vending.yaml 配置完成
-- [ ] 数据按 YOLO/COCO 格式组织
-- [ ] 安装依赖并验证 detect.py 能运行
-- [ ] 进行少量训练调试超参数
-- [ ] 导出并在目标设备验证模型效果
+# 中文（Chinese）
+
+# YOLOv5 Vending — 自动售货机检测与识别
+
+> 本仓库基于 YOLOv5，面向自动售货机场景，包含数据集组织示例、训练/推理脚本、模型导出与部署建议，方便快速训练与落地部署检测模型。
+
+## 目录
+- 项目简介
+- 功能
+- 环境要求
+- 安装
+- 快速开始
+  - 推理（图片 / 视频 / 摄像头）
+  - 训练
+- 数据集与标注
+- 导出与部署
+- 评估
+- 建议与最佳实践
+- 贡献
+- 许可
+- 联系
+
+---
+
+## 项目简介
+本项目提供用于自动售货机场景的 YOLOv5 检测器训练与部署脚本，目标包括识别饮料、零食、货道是否空缺、投币口等类目，支持离线批处理和实时摄像头检测。
+
+## 功能
+- 基于 YOLOv5 的训练与推理（支持 yolov5s/m/l）
+- 提供 YOLO(TXT) 与 COCO(JSON) 格式示例配置
+- 可配置的训练超参与增强策略
+- 支持导出 ONNX / TensorRT（在支持的环境下）
+- 支持单张图、批处理、视频与摄像头推理
+- 针对边缘设备（Jetson、Coral 等）的部署建议
+
+## 环境要求
+- Python 3.8+
+- PyTorch 1.10+（根据 CUDA 版本选择对应包）
+- CUDA 10.2 / 11.x（GPU 可选）
+- requirements.txt 中列出的其它依赖
+- 可选：TensorRT、ONNX、OpenCV（含 contrib）
+
+## 安装
+```bash
+git clone https://github.com/Ivy-forever18/yolov5-vending.git
+cd yolov5-vending
+
+# （可选）创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # macOS / Linux
+# venv\Scripts\activate   # Windows
+
+pip install -r requirements.txt
+
+# 若无 requirements.txt，可手动安装核心依赖：
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+# pip install -r requirements.txt
+```
+
+## 快速开始
+
+### 推理（单张图片）
+```bash
+python detect.py --weights yolov5s.pt --source data/images/test.jpg --conf 0.25 --save-conf --project runs/detect --name vending_demo
+```
+
+### 推理（视频 / 摄像头）
+```bash
+# 摄像头
+python detect.py --weights yolov5s.pt --source 0 --img 640 --conf 0.25
+
+# 视频文件
+python detect.py --weights yolov5s.pt --source data/videos/test.mp4 --img 640 --conf 0.25
+```
+
+### 训练
+准备好数据配置文件（参见数据集与标注），然后运行：
+```bash
+python train.py --img 640 --batch 16 --epochs 50 --data data/vending.yaml --weights yolov5s.pt --name vending_exp
+```
+常用参数：
+- --img: 输入尺寸（如 640）
+- --batch: 批大小（受显存限制）
+- --epochs: 训练轮数
+- --data: 数据配置 YAML 路径
+- --weights: 初始权重（可使用预训练 yolov5s.pt 或 checkpoint）
+
+## 数据集与标注
+
+支持格式：
+1. YOLO TXT（每张图片对应一个 .txt，格式："class x_center y_center width height"，坐标归一化到 [0,1]）
+2. COCO JSON（标准 COCO 格式）
+
+建议目录结构（YOLO 格式）：
+```
+dataset/
+  images/
+    train/
+    val/
+    test/
+  labels/
+    train/
+    val/
+    test/
+```
+
+示例 data/vending.yaml：
+```yaml
+train: ../dataset/images/train
+val:   ../dataset/images/val
+
+nc: 5
+names: ['drink','snack','coin_slot','empty_slot','other']
+```
+
+标注建议：
+- 类名保持一致并明确含义
+- 确保每张图片的标签文件与图片一一对应
+- 保留验证集用于可靠的 mAP 测量
+
+## 导出与部署
+
+导出 ONNX：
+```bash
+python export.py --weights runs/train/vending_exp/weights/best.pt --img 640 --include onnx
+```
+
+导出 TensorRT（在安装相关依赖且支持时）：
+```bash
+python export.py --weights runs/train/vending_exp/weights/best.pt --img 640 --include engine
+```
+
+部署建议：
+- 边缘设备优先使用轻量模型（yolov5s）或量化/剪枝模型
+- 在目标硬件上验证准确率与延迟
+- 实时系统中合理设置批大小与输入尺寸
+
+## 评估
+使用内置评估脚本计算 mAP、精度和召回率：
+```bash
+python val.py --weights runs/train/vending_exp/weights/best.pt --data data/vending.yaml --img 640
+```
+
+## 建议与最佳实践
+- 使用 Mosaic、MixUp 等增强以提升泛化能力
+- 对类不平衡情况考虑过采样或使用 focal loss
+- 改变批大小时按线性缩放规则调整学习率
+- 生产环境可使用量化、蒸馏或剪枝以降低模型体积与延迟
+
+## 贡献
+- 提交 Issue 讨论改动或报告 Bug
+- Fork → 新分支 → 提交 PR，PR 中请包含清晰说明和复现步骤
+- 报告数据或标注问题时请提供示例或说明如何重现
+
+## 许可
+请添加 LICENSE 文件以声明许可（例如 MIT）。当前仓库未显式包含许可文件 — 若计划开源或分发，请补充许可。
+
+## 联系
+仓库地址: https://github.com/Ivy-forever18/yolov5-vending  
+如需帮助，请在 Issue 中附上复现步骤与日志。
